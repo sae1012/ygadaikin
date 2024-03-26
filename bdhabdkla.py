@@ -1,7 +1,7 @@
 import telebot
 import random
 
-
+ХУЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙЙ
 token = "7043472916:AAE4VE3JPaLS46uSruhmleSRpguMjEK7E4k"
 bot = telebot.TeleBot(token=token)
 notes = {}
