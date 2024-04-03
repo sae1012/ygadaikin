@@ -4,7 +4,7 @@ from telebot import types
 
 
 
-token = "7043472916:AAE4VE3JPaLS46uSruhmleSRpguMjEK7E4k"
+token = "TOKEN"
 bot = telebot.TeleBot(token=token)
 numbers = {}
 
