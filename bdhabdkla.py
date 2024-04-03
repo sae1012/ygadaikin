@@ -1,11 +1,12 @@
 import telebot
 import random
+from telebot import types
 
 
 
 token = "7043472916:AAE4VE3JPaLS46uSruhmleSRpguMjEK7E4k"
 bot = telebot.TeleBot(token=token)
-notes = {}
+numbers = {}
 
 '''
 @bot.message_handler(commands=['remind'])
@@ -24,25 +25,38 @@ def remember(message):
 
 @bot.message_handler(commands=['start'])
 def priv(message):
-    global num_random
     user_id = message.chat.id
-    msg = bot.send_message(user_id, "Угадай число")
-    num_random = random.randint(1, 10)
-    bot.register_next_step_handler(msg, compare)
+    numbers[user_id] = random.randint(1, 10)
+    bot.send_message(user_id, "Угадай число")
 
 
 @bot.message_handler(content_types=['text'])
 def compare(message):
     user_id = message.chat.id
-    notes[user_id] = message.text
-    if num_random > int(message.text):
+    guess = int(message.text)
+    if numbers[user_id] > guess:
         more = bot.send_message(user_id, "Больше!")
         bot.register_next_step_handler(more, compare)
-    if num_random < int(message.text):
+    if numbers[user_id] < guess:
         less = bot.send_message(user_id, "Меньше!")
         bot.register_next_step_handler(less, compare)
-    if num_random == int(message.text):         
-        msg1 = bot.send_message(user_id, "Вам удалось отгадать число, это в самом деле, " + str(num_random))
-        bot.register_next_step_handler(msg1, priv)
+    if numbers[user_id] == int(message.text):
+        msg1 = bot.send_message(user_id, "Вам удалось отгадать число, это в самом деле, " + str(numbers[user_id]))
+        keyboard = types.InlineKeyboardMarkup()
+        button1 = types.InlineKeyboardButton(text="Да", callback_data="button1")
+        button2 = types.InlineKeyboardButton(text="Нет", callback_data="button2")
+        keyboard.add(button1, button2)
+        bot.send_message(user_id,'Еще Раз?', reply_markup=keyboard)
+
+ 
+@bot.callback_query_handler(func=lambda call: True)
+def choice(call):
+    if call.message:
+        if call.data == "button1":
+            chic = bot.send_message(call.message.chat.id, "Ура!")
+            priv(call.message)
+        if call.data == "button2":
+            bot.send_message(call.message.chat.id, "=(")
+
 
 bot.polling(none_stop=True)
